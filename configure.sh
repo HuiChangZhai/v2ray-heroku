@@ -13,30 +13,56 @@ rm -rf /tmp/v2ray
 # V2Ray new configuration
 install -d /usr/local/etc/v2ray
 cat << EOF > /usr/local/etc/v2ray/config.json
-{
-    "inbounds": [
-        {
-            "port": $PORT,
-            "protocol": "vmess",
-            "settings": {
-                "clients": [
-                    {
-                        "id": "$UUID",
-                        "alterId": 64
-                    }
-                ],
-                "disableInsecureEncryption": true
-            },
-            "streamSettings": {
-                "network": "ws"
-            }
-        }
-    ],
-    "outbounds": [
-        {
-            "protocol": "freedom"
-        }
+
+  "log": {
+    "loglevel": "warning",
+    "access": "/dev/null",
+    "error": "/dev/null"
+  },
+  "inbounds": [
+    {
+      "port": 51888,
+      "protocol": "shadowsocks",
+      "settings": {
+        "method": "aes-256-gcm",
+        "password": "www.zhai.org",
+        "network": "tcp,udp",
+        "level": 0
+      }
+    }
+  ],
+  "outbounds": [
+    {
+      "protocol": "freedom",
+      "settings": {},
+      "tag": "allowed"
+    },
+    {
+      "protocol": "blackhole",
+      "settings": {},
+      "tag": "blocked"
+    }
+  ],
+  "routing": {
+    "rules": [
+      {
+        "domain": [
+          "google.com",
+          "apple.com",
+          "oppomobile.com"
+        ],
+        "type": "field",
+        "outboundTag": "allowed"
+      },
+      {
+        "type": "field",
+        "ip": [
+          "geoip:private"
+        ],
+        "outboundTag": "blocked"
+      }
     ]
+  }
 }
 EOF
 
